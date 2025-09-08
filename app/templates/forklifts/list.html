@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% import "macros.html" as forms %}
+
+{% block title %}Daftar Forklift{% endblock %}
+
+{% block head_scripts %}
+<script>
+function confirmBulkDelete() {
+    const boxes = document.querySelectorAll('input[name="ids"]:checked');
+    if (boxes.length === 0) {
+        alert("Tidak ada data yang dipilih untuk dihapus.");
+        return false;
+    }
+    return confirm("Yakin hapus data terpilih?");
+}
+</script>
+{% endblock %}
+
+{% block header_title %}Daftar Forklift{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Tambah Forklift</h2>
+    <form action="/tambah" method="post" class="auth-form">
+        {{ forms.input_field("brand", "Brand") }}
+        {{ forms.input_field("type", "Type") }}
+        {{ forms.input_field("eq_no", "EQ No") }}
+        {{ forms.input_field("serial_number", "Serial Number") }}
+        {{ forms.input_field("location", "Location") }}
+        
+        {{ forms.select_field(
+            "powertrain", 
+            "Powertrain", 
+            [
+                {"value": "Electric", "text": "Electric"},
+                {"value": "Diesel", "text": "Diesel"},
+                {"value": "LPG", "text": "LPG"},
+                {"value": "Manual", "text": "Manual"},
+                {"value": "Instrument & Tools", "text": "Instrument & Tools"}
+            ]
+        ) }}
+        
+        <div class="form-group">
+            <label>Owner:</label>
+            <div class="form-check">
+                {{ forms.radio_field("owner", "PS Own", "PS Own") }}
+                {{ forms.radio_field("owner", "Customer Own", "Customer Own") }}
+            </div>
+        </div>
+        
+        {{ forms.input_field("mfg_year", "Tahun", "number", current_year, True) }}
+        
+        {{ forms.select_field(
+            "status", 
+            "Status", 
+            [
+                {"value": "Active", "text": "Active"},
+                {"value": "Retired", "text": "Retired"},
+                {"value": "Maintenance", "text": "Maintenance"}
+            ]
+        ) }}
+        
+        <div class="form-actions">
+            {{ forms.submit_button("Tambah Forklift") }}
+        </div>
+    </form>
+</section>
+
+<section class="mt-4">
+    <h2>List</h2>
+    <form action="/delete_bulk" method="post" onsubmit="return confirmBulkDelete()">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        {% if is_admin(request.state.user) or is_supervisor(request.state.user) %}<th>Pilih</th>{% endif %}
+                        <th>Brand</th>
+                        <th>Type</th>
+                        <th>EQ No</th>
+                        <th>Serial</th>
+                        <th>Location</th>
+                        <th>Powertrain</th>
+                        <th>Owner</th>
+                        <th>Tahun</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in forklifts %}
+                    <tr>
+                        {% if is_admin(request.state.user) or is_supervisor(request.state.user) %}<td><input type="checkbox" name="ids" value="{{ f.id }}"></td>{% endif %}
+                        <td>{{ f.brand }}</td>
+                        <td>{{ f.type }}</td>
+                        <td>{{ f.eq_no }}</td>
+                        <td>{{ f.serial_number }}</td>
+                        <td>{{ f.location }}</td>
+                        <td>{{ f.powertrain }}</td>
+                        <td>{{ f.owner }}</td>
+                        <td>{{ f.mfg_year }}</td>
+                        <td>{{ f.status }}</td>
+                        <td class="table-actions">
+    <form action="/edit/{{ f.id }}" method="get" style="display:inline">\n    <button type="submit" style="background:none;border:none;padding:0;margin:0;color:inherit;cursor:pointer;"><form action="/edit/{{ f.id }}" method="get" style="display:inline">\n    <button type="submit" style="background:none;border:none;padding:0;margin:0;color:inherit;cursor:pointer;">Edit</button>\n</form></button>\n</form> style="background:none;border:none;padding:0;margin:0;color:inherit;cursor:pointer;"><form action="/edit/{{ f.id }}" method="get" style="display:inline">\n    <button type="submit" style="background:none;border:none;padding:0;margin:0;color:inherit;cursor:pointer;">Edit</button>\n</form></a>{% if is_admin(request.state.user) or is_supervisor(request.state.user) %} | 
+    <form action="/delete/{{ f.id }}" method="post" style="display:inline">
+    <button type="submit" style="background:none;border:none;padding:0;margin:0;color:inherit;cursor:pointer;" onclick="return confirm('Yakin hapus data ini?')">Delete</button>
+</form>{% endif %}
+</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>{% if is_admin(request.state.user) or is_supervisor(request.state.user) %}
+        <div class="form-actions mt-2">
+            {{ forms.submit_button("Delete yang dipilih") }}
+        </div>
+{% endif %}</form>
+</section>
+
+{{ forms.pagination_controls(pagination, "/") }}
+{% endblock %}
+

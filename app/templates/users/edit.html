@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block header_title %}Edit User{% endblock %}
+
+{% block content %}
+  {% if error %}
+    <div class="error-message message">
+      <p>{{ error }}</p>
+    </div>
+  {% endif %}
+
+  <section>
+    <form action="/users/edit/{{ user.id }}" method="post" class="auth-form">
+      <div class="form-group">
+        <label for="name">Nama:</label>
+        <input type="text" id="name" name="name" value="{{ user.name }}" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" value="{{ user.password }}" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="role">Role:</label>
+        <select id="role" name="role" class="form-control" required>
+          <option value="admin" {% if user.role=='admin' %}selected{% endif %}>Admin</option>
+          <option value="supervisor" {% if user.role=='supervisor' %}selected{% endif %}>Supervisor</option>
+          <option value="teknisi" {% if user.role=='teknisi' %}selected{% endif %}>Teknisi</option>
+        </select>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn">Simpan</button>
+        <a href="/users/" class="btn btn-secondary">Kembali</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

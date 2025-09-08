@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Forklift{% endblock %}
+
+{% block header_title %}Edit Forklift{% endblock %}
+
+{% block content %}
+    {% if error %}
+        <div class="error-message message">
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+
+    <section>
+        <form action="/edit/{{ forklift.id }}" method="post" class="auth-form">
+            <div class="form-group">
+                <label for="brand">Brand:</label>
+                <input type="text" id="brand" name="brand" value="{{ forklift.brand }}" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="type">Type:</label>
+                <input type="text" id="type" name="type" value="{{ forklift.type }}" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="eq_no">EQ No:</label>
+                <input type="text" id="eq_no" name="eq_no" value="{{ forklift.eq_no }}" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="serial_number">Serial Number:</label>
+                <input type="text" id="serial_number" name="serial_number" value="{{ forklift.serial_number }}" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" value="{{ forklift.location }}" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="powertrain">Powertrain:</label>
+                <select id="powertrain" name="powertrain" class="form-control" required>
+                    <option value="Electric" {% if forklift.powertrain=='Electric' %}selected{% endif %}>Electric</option>
+                    <option value="Diesel" {% if forklift.powertrain=='Diesel' %}selected{% endif %}>Diesel</option>
+                    <option value="LPG" {% if forklift.powertrain=='LPG' %}selected{% endif %}>LPG</option>
+                    <option value="Manual" {% if forklift.powertrain=='Manual' %}selected{% endif %}>Manual</option>
+                    <option value="Instrument & Tools" {% if forklift.powertrain=='Instrument & Tools' %}selected{% endif %}>Instrument & Tools</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="owner">Owner:</label>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <label for="owner_ps" class="form-check" style="display:flex;align-items:center;gap:6px;margin:0;">
+                        <input type="radio" id="owner_ps" name="owner" value="PS Own" {% if forklift.owner=='PS Own' %}checked{% endif %}>
+                        PS Own
+                    </label>
+                    <label for="owner_customer" class="form-check" style="display:flex;align-items:center;gap:6px;margin:0;">
+                        <input type="radio" id="owner_customer" name="owner" value="Customer Own" {% if forklift.owner=='Customer Own' %}checked{% endif %}>
+                        Customer Own
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="mfg_year">Tahun:</label>
+                <input type="number" id="mfg_year" name="mfg_year" value="{{ forklift.mfg_year }}" min="1950" max="2099" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select id="status" name="status" class="form-control" required>
+                    <option value="Active" {% if forklift.status=='Active' %}selected{% endif %}>Active</option>
+                    <option value="Retired" {% if forklift.status=='Retired' %}selected{% endif %}>Retired</option>
+                    <option value="Maintenance" {% if forklift.status=='Maintenance' %}selected{% endif %}>Maintenance</option>
+                </select>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn">Simpan</button>
+                <a href="/" class="btn btn-secondary">Kembali</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

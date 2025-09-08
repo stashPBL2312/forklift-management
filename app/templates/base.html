@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <title>{% block title %}Forklift Repair Logging System{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Critical CSS inline for faster initial render -->
+    <style>
+        /* Critical CSS only - minimal styles needed for initial render */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 1200px; margin: 0 auto; color: #333; }
+        header { margin-bottom: 20px; }
+        h1 { color: #333; margin-bottom: 0.75em; font-weight: 600; line-height: 1.2; font-size: 1.75rem; }
+        h2 { font-size: 1.5rem; margin-bottom: 0.75em; font-weight: 600; line-height: 1.2; color: #333; }
+        nav { margin: 10px 0; display: flex; flex-wrap: wrap; align-items: center; }
+        nav a { margin-right: 10px; text-decoration: none; color: #0066cc; padding: 5px 0; }
+        nav a:hover { text-decoration: underline; color: #004c99; }
+        .message { padding: 10px; margin-bottom: 20px; border-radius: 4px; border: 1px solid transparent; }
+        .error-message { background-color: #ffeeee; border-color: #ff0000; color: #ff0000; }
+        .success-message { background-color: #eeffee; border-color: #00cc00; color: #006600; }
+        
+        /* Basic form and table styles for initial render */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #444; }
+        input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+        button, .btn { background-color: #0066cc; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95rem; }
+        th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
+        th { background-color: #f5f5f5; font-weight: 600; color: #444; border-bottom: 2px solid #ddd; }
+        
+        /* Auth form styles */
+        .auth-form-section { display: flex; justify-content: center; align-items: center; margin: 20px 0; }
+        .auth-container { width: 100%; max-width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 4px; }
+        .auth-form { display: flex; flex-direction: column; gap: 15px; }
+        .form-description { margin-bottom: 15px; color: #666; }
+        .form-actions { margin-top: 20px; }
+        .form-links { margin-top: 15px; text-align: center; }
+        .form-links a { color: #0066cc; text-decoration: none; font-size: 14px; }
+        .form-links a:hover { text-decoration: underline; }
+    </style>
+    <!-- Main CSS with preload for performance -->
+    <link rel="preload" href="{{ url_for('static', path='/css/styles.css') }}?v=1" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}?v=1"></noscript>
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Preconnect to resources -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    
+    <!-- Minimal JS in head, defer everything possible -->
+    <script>
+        // Prefetch pages on hover
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    const prefetchLink = document.createElement('link');
+                    prefetchLink.rel = 'prefetch';
+                    prefetchLink.href = this.href;
+                    document.head.appendChild(prefetchLink);
+                });
+            });
+        });
+    </script>
+    {% block head_scripts %}{% endblock %}
+</head>
+<body>
+    <header>
+        <h1>{% block header_title %}Forklift Repair Logging System{% endblock %}</h1>
+        <nav>
+            <a href="/">Halaman Forklift</a> |
+            <a href="/pm/">PM/Lapangan Jobs</a> |
+            {% if is_admin(request.state.user) %}<a href="/users/">User Management</a> |{% endif %}
+            <a href="/workshop/">Workshop Jobs</a> |
+            {% if request.cookies.get('session_token') %}
+            <a href="/auth/logout" id="logout-link">Logout</a>
+            <span id="user-info" style="margin-left: 10px;">
+                {{ request.state.user.name if request.state.user else '' }}
+                ({{ request.state.user.email if request.state.user else '' }})
+            </span>
+            {% else %}
+            <a href="/auth/login" id="login-link">Login</a>
+            {% endif %}
+        </nav>
+        <hr>
+    </header>
+
+    <main>
+        {% if error %}
+        <div class="error-message">
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <hr>
+        <p>&copy; {{ current_year }} Forklift Repair Logging System</p>
+    </footer>
+
+    <!-- Scripts at the end for faster page load -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}PM Jobs{% endblock %}
+
+{% block header_title %}PM / Lapangan Jobs{% endblock %}
+
+{% block content %}
+  {% if error %}
+    <div class="error-message">
+      <p>{{ error }}</p>
+    </div>
+  {% endif %}
+
+  <form action="/pm/tambah" method="post" class="auth-form">
+    <div class="form-group">
+      <label for="forklift_id">Forklift:</label>
+      <select name="forklift_id" id="forklift_id" required>
+        {% for f in forklifts %}
+        <option value="{{ f.id }}">{{ f.brand }} - {{ f.eq_no }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="date">Tanggal:</label>
+      <input type="date" name="date" id="date" value="{{ today }}" required>
+    </div>
+
+    <div class="form-group">
+      <label>Teknisi (checklist multiple):</label><br>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        {% for u in users %}
+          <label for="tech_{{ u.id }}" style="display:flex;align-items:center;gap:6px;margin:0">
+            <input type="checkbox" id="tech_{{ u.id }}" name="technicians" value="{{ u.id }}">
+            <span>{{ u.name }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="report_no">Report No:</label>
+      <input type="text" name="report_no" id="report_no" required>
+    </div>
+
+    <div class="form-group">
+      <label for="next_pm_option">Next PM:</label>
+      <select name="next_pm_option" id="next_pm_option">
+        <option value="">-</option>
+        <option value="1bulan">+1 Bulan</option>
+        <option value="2bulan">+2 Bulan</option>
+        <option value="3bulan">+3 Bulan</option>
+      </select>
+      <label for="next_pm_date">atau custom:</label>
+      <input type="date" name="next_pm_date" id="next_pm_date">
+    </div>
+
+    <div class="form-group">
+      <label for="job_desc">Deskripsi:</label><br>
+      <textarea name="job_desc" id="job_desc" rows="4" cols="50" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="recommendation">Recommendation:</label><br>
+      <textarea name="recommendation" id="recommendation" rows="4" cols="50"></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit">Tambah PM Job</button>
+    </div>
+  </form>
+
+  <h2>Daftar PM Jobs</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Forklift</th>
+        <th>Tanggal</th>
+        <th>Teknisi</th>
+        <th>Pekerjaan</th>
+        <th>Recommendation</th>
+        <th>Next PM</th>
+        <th>Report No</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for job in jobs %}
+      <tr>
+        <td>{{ job.forklift.brand }} ({{ job.forklift.eq_no }})</td>
+        <td>{{ job.date }}</td>
+        <td>
+          {% for assign in job.assigned %}
+            {{ assign.user.name }}<br>
+          {% endfor %}
+        </td>
+        <td>{{ job.job_desc }}</td>
+        <td>{{ job.recommendation or '-' }}</td>
+        <td>{{ job.next_pm_date or '-' }}</td>
+        <td>{{ job.report_no }}</td>
+        <td>
+  {% if is_admin(request.state.user) or is_assigned_to_pm(request.state.user, job) %}
+    <a class="btn-link" href="/pm/edit/{{ job.id }}">Edit</a> |
+    <a href="/pm/delete/{{ job.id }}">Delete</a>
+  {% endif %}
+</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block extra_css %}
+<!-- No extra CSS needed - using standardized styles from styles.css -->
+{% endblock %}
